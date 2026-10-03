@@ -1,0 +1,96 @@
+import java.util.HashSet;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+import java.util.Set;
+
+public class SelectionSortPositions {
+
+    static int[] selectionSortIndices(int[] a) {
+        int n = a.length;
+        int[] idx = new int[n];
+        for (int i = 0; i < n; i++) idx[i] = i;
+
+        for (int i = 0; i < n - 1; i++) {
+            int min = i;
+            for (int j = i + 1; j < n; j++) {
+                if (a[idx[j]] < a[idx[min]]) min = j;
+            }
+            if (min != i) {
+                int tmp = idx[i];
+                idx[i] = idx[min];
+                idx[min] = tmp;
+            }
+        }
+        return idx;
+    }
+
+    static int readInt(Scanner sc, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                return sc.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("  Invalid input. Please enter a whole number.");
+                sc.next();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("=== Selection Sort: Sorted Position Finder ===");
+
+        int n;
+        do {
+            n = readInt(sc, "Enter the number of elements (N): ");
+            if (n <= 0) System.out.println("  N must be at least 1.");
+        } while (n <= 0);
+
+        int[] a = new int[n];
+        Set<Integer> seen = new HashSet<>();
+        System.out.println("Enter " + n + " UNIQUE integers:");
+        for (int i = 0; i < n; i++) {
+            while (true) {
+                int v = readInt(sc, "  A[" + i + "] = ");
+                if (seen.add(v)) {
+                    a[i] = v;
+                    break;
+                }
+                System.out.println("  " + v + " was already entered. All elements must be unique.");
+            }
+        }
+
+        int[] idx = selectionSortIndices(a);
+
+        int[] pos = new int[n];
+        for (int k = 0; k < n; k++) pos[idx[k]] = k + 1;
+
+        System.out.println();
+        System.out.println("Sorted array: ");
+        StringBuilder sb = new StringBuilder("[");
+        for (int k = 0; k < n; k++) {
+            sb.append(a[idx[k]]);
+            if (k < n - 1) sb.append(", ");
+        }
+        sb.append("]");
+        System.out.println(sb);
+
+        System.out.println();
+        System.out.println("Index | Value | Position in sorted array (1-based)");
+        System.out.println("------+-------+------------------------------------");
+        for (int i = 0; i < n; i++) {
+            System.out.printf("%5d | %5d | %d%n", i, a[i], pos[i]);
+        }
+
+        System.out.println();
+        StringBuilder out = new StringBuilder("Result: ");
+        for (int i = 0; i < n; i++) {
+            out.append(pos[i]);
+            if (i < n - 1) out.append(" ");
+        }
+        System.out.println(out);
+
+        sc.close();
+    }
+}
